@@ -1,0 +1,92 @@
+#import scrapy
+import time
+from pymongo import MongoClient
+import json
+from urllib.request import urlopen
+import smtplib
+
+#Each degree of latitude is approximately 69 miles
+#Degrees of longitude vary from 69 miles to zero depending on latitude
+LATITUDE_OFFSET = 4 # about 50 miles
+LONGITUDE_OFFSET = 1 # also about 50 miles
+
+#variables to customize
+admin_email = "hello@example.com"
+api_key = "api_key_goes_here" #ENTER YOUR API KEY
+
+
+client = MongoClient()
+db = client.endo
+collection_runs = db.runs
+cursor = collection_runs.find({"run_info":{'$exists':True}, "country":{'$exists':False}})
+
+def update_from_insert(latitude, longitude, country):
+    '''this function assumes that any run within ~50 miles of a known latitude/longitude is in the same country as that latitude/longitude. So it updates records that have no recorded country and that happened within 50 miles of a record with a known country. Note also that for areas at +/- 180 degrees this method does not do a full search but does the naive adding/sutbracting, so parts of Russia/US/New Zealand/Pacific Island nations are not classified when they otherwise could be but this likely affects small number of records if at all and will not result in any misclassification'''
+    lat_l = latitude - LATITUDE_OFFSET
+    lat_h = latitude + LATITUDE_OFFSET
+    lon_l = longitude - LONGITUDE_OFFSET
+    lon_h = longitude + LONGITUDE_OFFSET
+
+    result_object = collection_runs.find_one({"run_info.laps.metric.begin_latitude":{'$gte':lat_l, '$lte':lat_h}, "run_info.laps.metric.begin_longitude":{'$gte':lon_l, '$lte':lon_h},  "country":{'$exists':False}}, {"run":True, "endo":True})
+    while result_object:
+        collection_runs.update({"run":result_object["run"]}, {'$set':{"country":country}}) 
+        result_object = collection_runs.find_one({"run_info.laps.metric.begin_latitude":{'$gte':lat_l, '$lte':lat_h}, "run_info.laps.metric.begin_longitude":{'$gte':lon_l, '$lte':lon_h},  "country":{'$exists':False}}, {"run":True, "endo":True})
+
+    result_object = collection_runs.find_one({"run_info.laps.imperial.begin_latitude":{'$gte':lat_l, '$lte':lat_h}, "run_info.laps.imperial.begin_longitude":{'$gte':lon_l, '$lte':lon_h},  "country":{'$exists':False}}, {"run":True, "endo":True})
+    while result_object:
+
+        collection_runs.update({"run":result_object["run"]}, {'$set':{"country":country}}) 
+        result_object = collection_runs.find_one({"run_info.laps.imperial.begin_latitude":{'$gte':lat_l, '$lte':lat_h}, "run_info.laps.imperial.begin_longitude":{'$gte':lon_l, '$lte':lon_h},  "country":{'$exists':False}}, {"run":True, "endo":True})
+
+
+
+    result_object = collection_runs.find_one({"run_info.points.points.latitude":{'$gte':lat_l, '$lte':lat_h}, "run_info.points.points.longitude":{'$gte':lon_l, '$lte':lon_h},    "country":{'$exists':0}}, {"run":1, "endo":1})
+    while result_object: 
+
+       collection_runs.update({"run":result_object["run"]}, {'$set':{"country":country}})
+       result_object = collection_runs.find_one({"run_info.points.points.latitude":{'$gte':lat_l, '$lte':lat_h}, "run_info.points.points.longitude":{'$gte':lon_l, '$lte':lon_h},    "country":{'$exists':0}}, {"run":1, "endo":1})
+        
+
+def insert_try(response, result_object, latitude, longitude):
+   try:
+      str_response = response.readall().decode('utf-8')
+      jsonresponse = json.loads(str_response)
+   except:
+      insert_fail(result_object)
+   else:
+      g = jsonresponse.get("results", None)
+      if g:
+          ggg = g[0].get("address_components", None)
+          f =  [g.get("long_name", None) for g in ggg if "country" in g.get("types", None)]
+          collection_runs.update({"run":result_object["run"]}, {'$set':{"country":f[0]}}, upsert = False)
+          update_from_insert(latitude, longitude, f[0])
+      else:
+         insert_fail(result_object)
+
+
+def insert_fail(result_object):
+'''sometimes the Google API does not identify the country of a latitude/longitude pair. In such cases
+the failure is marked so the query is not repeated.'''
+    collection_runs.update({"run":result_object["run"]}, {'$set':{"no_location":1}}, upsert = False)
+    
+
+result_object = collection_runs.find_one({'$and':[{"no_location":{'$exists':False}}, {"run_info":{'$exists':True}}, {"country":{'$exists':False}}, {"latitude":{'$exists':True}} ] })
+
+api_count = 1
+while result_object and api_count < 2500:
+   latitude = result_object['latitude']
+   longitude = result_object['longitude']  
+   url = "https://maps.googleapis.com/maps/api/geocode/json?latlng=%s,%s&key=%s"%(latitude, longitude, api_key)
+   response = urlopen(url)
+   insert_try(response, result_object, latitude, longitude)
+   result_object = collection_runs.find_one({'$and':[{"no_location":{'$exists':False}}, {"run_info":{'$exists':True}}, {"country":{'$exists':False}}, {'$or':[{"run_info.points":{'$exists':1}}, {"run_info.laps":{'$exists':1} }]} ] })
+   api_count += 1
+   time.sleep(1)
+
+
+try:
+   smtpObj = smtplib.SMTP('localhost')
+   smtpObj.sendmail(admin_email, admin_email, "reverse-geocoding ran today")         
+except SMTPException:
+    pass
+

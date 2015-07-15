@@ -1,0 +1,97 @@
+import pprint
+import math
+import os
+import pymongo
+from pymongo import MongoClient
+import pandas as pd
+import scipy.stats as stats
+import matplotlib.pyplot as plot
+from sklearn.linear_model import LinearRegression
+import numpy
+from sklearn.metrics import r2_score
+from sklearn import cross_validation
+from sklearn import datasets
+import sys
+
+client = MongoClient()
+db = client.endo
+collection = db.users
+collection_runs = db.runs
+
+ 
+
+limit = 200000
+c = db.users.aggregate([{'$project':{"endo":True, "activityArray.local_start_time":True,  "activityArray.distance":True,  "activityArray.duration":True,  "activityArray.speed_avg":True, "activityArray.altitude_max":True, "activityArray.sport":True,  "activityArray.altitude_min":True,  "activityArray.speed_max":True,  "activityArray.ascent":True,  "activityArray.descent":True,  "activityArray.title":True, "lengthArray":{'$size':"$activityArray"}}}, {'$limit':limit}])
+
+df2 = pd.DataFrame(list(c))
+
+print(df2.head())
+
+names_list = ['sport', 'local_start_time', 'distance', 'duration', 'speed_avg', 'altitude_max', 'altitude_min', 'speed_max', 'ascent', 'descent', 'title']
+
+for name in names_list:
+    j = []
+    for i in df2['activityArray']:
+        if len(i) > 0:
+            ii = [I[name] if I.get(name) else -999  for I in i]
+        else:
+            ii = []
+        j.append(ii)
+    df2.loc[:, name] = j
+
+
+j = []
+for I in df2['sport']:
+    jj = sum([1 if i is 1 else 0 for i in I])
+    j.append(jj)
+df2.loc[:,'num_runs'] = j
+
+df2.loc[:, 'percent_runs'] = df2.loc[:, 'num_runs']/df2.loc[:, 'lengthArray']
+del df2['activityArray']
+
+
+df2 = df2[df2.num_runs>0]
+df2.to_csv("users_all.csv")
+sys.exit()
+
+
+
+
+
+
+num_rows = df2.shape[0]
+print "num rows is %d"%num_rows
+print(df2.head())
+
+
+
+#df2_x = df2.iloc[:, 5].reshape(
+
+regr = LinearRegression()
+print(df2.iloc[1:1000, 5:6].shape[0])
+print(df2.iloc[1:1000, 2:3].shape[0])
+regr.fit(df2.iloc[:, 5:6].values, df2.iloc[:, 2:3].values)
+
+pprint.pprint(vars(regr))
+
+predict_values = regr.predict(df2.iloc[:, 5:6].values)
+
+ff = r2_score(df2.iloc[:, 2:3].values, predict_values)
+print(ff)
+
+
+scores = cross_validation.cross_val_score(regr, df2.iloc[:, 2:3], df2.iloc[:, 5:6], cv=10)
+print(scores)
+
+'''
+# The coefficients
+print('Coefficients: \n', regr.coef_)
+# The mean square error
+print("Residual sum of squares: %.2f"
+      % np.mean((regr.predict(df2.iloc[1001:2000, 5]) - df2.iloc[1001:2000, 2]) ** 2))
+# Explained variance score: 1 is perfect prediction
+print('Variance score: %.2f' % regr.score(df2.iloc[1001:2000, 5], (df2.iloc[1001:2000, 2])))
+
+#regr.fit(df2[:,)
+
+'''
