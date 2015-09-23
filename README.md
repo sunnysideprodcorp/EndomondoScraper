@@ -41,7 +41,7 @@ Once you've scraped this data you can see what time people go running in differe
 
 Similarly, you can try to find out whether early or later runners reap any rewards. The EndoMondo data suggests that when folks go running isn't too related to how hard they run, at least on the global scale.
 
-![early vs late running countries](http://www.sunnysideworks.nyc/Simply-Run/blogposts/2/morning_night_scatter.png)
+![early vs late running countries](https://github.com/sunnysideprodcorp/EndomondoScraper/blob/master/images/morning_night.png)
  
 
 ###More details
