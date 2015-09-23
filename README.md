@@ -1,4 +1,6 @@
-Once you've scraped this data you can see what time people go running in different countries, as shown in this [interactive histogram](http://www.sunnysideworks.nyc/Simply-Run/blog1#histcontainer). 
+Once you've scraped this data you can see what time people go running in different countries, as shown in this [interactive histogram](http://www.sunnysideworks.nyc/Simply-Run/blog1#histcontainer), or in a static image as below:
+
+![comparing Nordic and Baltic countries's running time patterns](http://www.sunnysideworks.nyc/Simply-Run/blogposts/1/baltic.png)
 
 
 
