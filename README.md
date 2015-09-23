@@ -1,7 +1,5 @@
-Once you've scraped this data you can see what time people go running in different countries, as shown in this [interactive histogram](http://www.sunnysideworks.nyc/Simply-Run/blog1#histcontainer), or in a static image as below:
 
-![Nordic countries' running start times](https://github.com/sunnysideprodcorp/EndomondoScraper/blob/master/images/nordic.png)
-![Baltic countries' running start times](https://github.com/sunnysideprodcorp/EndomondoScraper/blob/master/images/baltic.png)
+### The raw data
 
 The images all came from around 150,000 run records, each of which looked something like the ones below:
 
@@ -24,14 +22,23 @@ The images all came from around 150,000 run records, each of which looked someth
 15	465767616	20166263	24	5572206fafe58716148038a1	Poland	NA	NA	NA	NA	NA	NA	NA	684.56	1.764000058	1	31.8	33.3	143.26	NA	NA	NA	-1	9.276615942	NA	17.9758	2015-01-30T20:26:40	16503	55721cd0afe58716147f147b	1	[-999]	[u'2015-01-30T20:26:40.000Z']	[1.7640000581741333]	[684.56]	[9.276615942250322]	[130.2]	[97.4]	[17.9758]	[31.8]	[33.3]	0	0	20166263	3	86	24	NA	20
 ```
 
-
+###Geographic Range
 
 A rough idea of the geographic distribution of EndoMondo users sampled can be gleaned from a plot of all runs documented in the data set:
 
 ![World map showing run locations](https://github.com/sunnysideprodcorp/EndomondoScraper/blob/master/images/world.png)
 
 
-More details
+### Information available in the data
+
+Once you've scraped this data you can see what time people go running in different countries, as shown in this [interactive histogram](http://www.sunnysideworks.nyc/Simply-Run/blog1#histcontainer), or in a static image as below:
+
+![Nordic countries' running start times](https://github.com/sunnysideprodcorp/EndomondoScraper/blob/master/images/nordic.png)
+![Baltic countries' running start times](https://github.com/sunnysideprodcorp/EndomondoScraper/blob/master/images/baltic.png)
+
+ 
+
+###More details
 
 This project was undertaken to see whether there are country-specific patterns to how people run, as far as could be ascertained by sampling publicly available data recorded via the EndomMondo running app between January and June of 2015. The data was scraped in two parts, first query the EndoMondo API to determined valid user IDs and then scraping the exercise history of those valid IDs. The IDs were discovered from a full sampling of a randomly selected set of 100,000 contiguous possible ID numbers. No trends were found in geographic distribution for these ID numbers, suggesting that this should constitute a fair geographic sampling of the users.
 
