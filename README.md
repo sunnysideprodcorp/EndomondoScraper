@@ -1,7 +1,7 @@
 Once you've scraped this data you can see what time people go running in different countries, as shown in this [interactive histogram](http://www.sunnysideworks.nyc/Simply-Run/blog1#histcontainer), or in a static image as below:
 
 ![Nordic countries' running start times](https://github.com/sunnysideprodcorp/EndomondoScraper/blob/master/images/nordic.png)
-![Baltic countries' running start times])(https://github.com/sunnysideprodcorp/EndomondoScraper/blob/master/images/baltic.png)
+![Baltic countries' running start times](https://github.com/sunnysideprodcorp/EndomondoScraper/blob/master/images/baltic.png)
 
 
 
