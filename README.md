@@ -28,6 +28,9 @@ A rough idea of the geographic distribution of EndoMondo users sampled can be gl
 
 ![World map showing run locations](https://github.com/sunnysideprodcorp/EndomondoScraper/blob/master/images/world.png)
 
+We can also get a better idea of the distribution within Europe from zooming in:
+
+![World map showing run locations](https://github.com/sunnysideprodcorp/EndomondoScraper/blob/master/images/Europe.png)
 
 ### Information available in the data
 
@@ -36,6 +39,9 @@ Once you've scraped this data you can see what time people go running in differe
 ![Nordic countries' running start times](https://github.com/sunnysideprodcorp/EndomondoScraper/blob/master/images/nordic.png)
 ![Baltic countries' running start times](https://github.com/sunnysideprodcorp/EndomondoScraper/blob/master/images/baltic.png)
 
+Similarly, you can try to find out whether early or later runners reap any rewards. The EndoMondo data suggests that when folks go running isn't too related to how hard they run, at least on the global scale.
+
+![early vs late running countries](http://www.sunnysideworks.nyc/Simply-Run/blogposts/2/morning_night_scatter.png)
  
 
 ###More details
