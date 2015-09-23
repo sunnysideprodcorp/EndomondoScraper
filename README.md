@@ -3,6 +3,13 @@ Once you've scraped this data you can see what time people go running in differe
 ![Nordic countries' running start times](https://github.com/sunnysideprodcorp/EndomondoScraper/blob/master/images/nordic.png)
 ![Baltic countries' running start times](https://github.com/sunnysideprodcorp/EndomondoScraper/blob/master/images/baltic.png)
 
+The images all came from around 150,000 run records, each of which looked something like the ones below:
+
+
+
+A rough idea of the geographic distribution of EndoMondo users sampled can be gleaned from a plot of all runs documented in the data set:
+
+![World map showing run locations](https://github.com/sunnysideprodcorp/EndomondoScraper/blob/master/images/world.png)
 
 
 More details
