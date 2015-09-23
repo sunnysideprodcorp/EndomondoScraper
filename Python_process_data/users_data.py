@@ -15,15 +15,20 @@ collection_runs = db.runs
 #update these values 
 limit = 200000 #choose your limit
 
+#get data from database, including 1 bit of metadata:size of activityArray 
 from_db = db.users.aggregate([{'$project':{"endo":True, "activityArray.local_start_time":True,  "activityArray.distance":True,  "activityArray.duration":True,  "activityArray.speed_avg":True, "activityArray.altitude_max":True, "activityArray.sport":True,  "activityArray.altitude_min":True,  "activityArray.speed_max":True,  "activityArray.ascent":True,  "activityArray.descent":True,  "activityArray.title":True, "lengthArray":{'$size':"$activityArray"}}}, {'$limit':limit}])
 df = pd.DataFrame(from_db)
-names_list = ['sport', 'local_start_time', 'distance', 'duration', 'speed_avg', 'altitude_max', 'altitude_min', 'speed_max', 'ascent', 'descent', 'title']
+
+
 
 '''for each of the values of interest, as definied in names_list, we determine whether that info is available for each document
 in the activityArray. If it's available, we record the value, if not we record -999 as indicating a missing value
 all these arrays must match, so we must have a placeholder missing value (-999) to keep arrays aligned
 for example we want the local_start_time and distance arrays to match in length and order so we can easily retrieve all values for a given activity
 depending on which index we choose. all arrays should contain data for the same activity (same day, same activity, same person) per index'''
+
+names_list = ['sport', 'local_start_time', 'distance', 'duration', 'speed_avg', 'altitude_max', 'altitude_min', 'speed_max', 'ascent', 'descent', 'title']
+
 for name in names_list:
     total_list = []
     for activity in df['activityArray']:

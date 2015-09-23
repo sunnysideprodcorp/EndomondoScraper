@@ -1,7 +1,0 @@
-Web scraping and data entry were accomplished in 5 distinct steps:
-
-(1) Part1.py: Query Endo API for a series of putative user ID's only some of which were true user ID's, as determined by which user ID's returned content. For each valid user ID, create a directory and store each month's activities per user in a JSON-containing file. Use Scrapy package.
-
-(2) Part2.py: Insert user data into MongoDB, with one document per user, synthesizing information from all files saved per user in step (1).
-
-(3) Part3.py: 
